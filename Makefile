@@ -12,4 +12,4 @@ client: client.c
 
 .PHONY: clean
 clean:
-	$(RM) $(TARGETS)
+	$(RM) $(TARGETS) ProgramY*

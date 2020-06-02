@@ -9,11 +9,22 @@
 #include <errno.h>
 #include <arpa/inet.h> 
 
+int init_source(char *path, char *source){
+    FILE *f = fopen(path, "rb");    
+    fseek(f, 0, SEEK_END);
+    long fsize = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    fread(source, 1, fsize, f);
+    source[fsize] = '\0';
+    fclose(f);
+}
+
 int main(int argc, char *argv[])
 {
     int sockfd = 0, n = 0;
     char recvBuff[1024];
-    char source[4096] = "#include";
+    char source[4096] = "#include\0";
     struct sockaddr_in serv_addr; 
 
     if(argc != 2)
@@ -23,7 +34,6 @@ int main(int argc, char *argv[])
     } 
 
     memset(recvBuff, '0',sizeof(recvBuff));
-    memset(source, '0',sizeof(source));
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         printf("\n Error : Could not create socket \n");
@@ -47,21 +57,10 @@ int main(int argc, char *argv[])
        return 1;
     } 
 
-    while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
-    {
-        recvBuff[n] = 0;
-        if(fputs(recvBuff, stdout) == EOF)
-        {
-            printf("\n Error : Fputs error\n");
-        }
-    } 
-
-    if(n < 0)
-    {
-        printf("\n Read error \n");
-    } 
-
-    write(sockfd, source, strlen(source));
+    init_source("hello.c", source);
+    send(sockfd, source, strlen(source), 0);
+    recv(sockfd, recvBuff, sizeof(recvBuff), 0);
+    printf("Recieve %s\n", recvBuff);
 
     return 0;
 }

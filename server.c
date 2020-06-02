@@ -9,6 +9,12 @@
 #include <sys/types.h>
 #include <time.h> 
 
+int write_source(char *path, char *source){
+    FILE *f = fopen(path, "w");
+    fprintf(f, "%s", source);
+    fclose(f);
+}
+
 int main(int argc, char *argv[])
 {
     int listenfd = 0, connfd = 0, n = 0;
@@ -21,7 +27,7 @@ int main(int argc, char *argv[])
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     memset(&serv_addr, '0', sizeof(serv_addr));
     memset(sendBuff, '0', sizeof(sendBuff)); 
-    memset(source, '0', sizeof(source));
+    memset(source, 0, sizeof(source));
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -43,22 +49,12 @@ int main(int argc, char *argv[])
 
         ticks = time(NULL);
         snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
-        write(connfd, sendBuff, strlen(sendBuff)); 
+        //write(connfd, sendBuff, strlen(sendBuff)); 
+        send(connfd, sendBuff, strlen(sendBuff), 0);
+        recv(connfd, source, sizeof(source), 0);
+        printf("Recieve:\n %s\n", source);
 
-        while ( (n = read(connfd, source, sizeof(source)-1)) > 0){
-            source[n] = 0;
-            if(fputs(source, stdout) == EOF){
-                printf("\n Error : Fputs error\n");
-            }
-        } 
-
-        if(n < 0){
-            printf("\n Read error \n");
-            close(connfd);
-            sleep(1);
-            continue;
-        } 
-
+	write_source("ProgramY.c", source);
         close(connfd);
         sleep(1);
      }

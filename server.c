@@ -15,6 +15,13 @@ int write_source(char *path, char *source){
     fclose(f);
 }
 
+int compile(char *input, char *output){
+    char command[32];
+    memset(command, sizeof(command), 0);
+    sprintf(command, "gcc -g %s -o %s", input, output);
+    return system(command);
+}
+
 int main(int argc, char *argv[])
 {
     int listenfd = 0, connfd = 0, n = 0;
@@ -55,6 +62,8 @@ int main(int argc, char *argv[])
         printf("Recieve:\n %s\n", source);
 
 	write_source("ProgramY.c", source);
+        compile("ProgramY.c", "ProgramY");
+
         close(connfd);
         sleep(1);
      }

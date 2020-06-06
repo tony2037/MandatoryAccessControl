@@ -16,7 +16,7 @@ int write_source(char *path, char *source){
 }
 
 int compile(char *input, char *output){
-    char command[32];
+    char command[256];
     memset(command, sizeof(command), 0);
     sprintf(command, "gcc -g %s -o %s", input, output);
     return system(command);
@@ -56,13 +56,19 @@ int main(int argc, char *argv[])
 
         ticks = time(NULL);
         snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
-        //write(connfd, sendBuff, strlen(sendBuff)); 
         send(connfd, sendBuff, strlen(sendBuff), 0);
         recv(connfd, source, sizeof(source), 0);
         printf("Recieve:\n %s\n", source);
 
-	write_source("ProgramY.c", source);
-        compile("ProgramY.c", "ProgramY");
+	write_source("/var/X/ProgramY.c", source);
+        compile("/var/X/ProgramY.c", "/var/Y/ProgramY");
+
+        pid_t pid = fork();
+        if (pid == 0){
+            static char *argv[] = {};
+            execv("/var/Y/ProgramY", argv);
+            exit(127);
+        }
 
         close(connfd);
         sleep(1);

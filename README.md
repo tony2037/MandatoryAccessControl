@@ -18,3 +18,26 @@ To make the grading process more manageable, please work on your policy from a f
 
 [1]: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/selinux_users_and_administrators_guide/index
 [2]: https://wiki.ubuntu.com/AppArmor
+
+# Usage
+
+* set up environment
+```bash=
+sudo sh environment.sh
+sudo sh StartApparmor.sh
+```
+
+* install
+```bash=
+make
+sudo sh install.sh
+```
+
+* launch ProgramX
+```bash=
+sudo ./server
+```
+
+```bash=
+./client 127.0.0.1
+```
